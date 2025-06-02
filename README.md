@@ -1,126 +1,51 @@
-# EventsISB - Islamabad Events Discovery Platform
+# Featured Events Page
 
-A modern, responsive React application for discovering local events in Islamabad, Pakistan.
+A responsive single-page website for the Dynamics 360 Web Development Internship case study, showcasing local events in Islamabad, Pakistan. The page features a navigation bar, a hero section, and a "Featured Events" section with 3 event cards, including a search bar to filter events by name and dynamic event data rendering. Built with modern web technologies, the site is mobile- and tablet-friendly, meeting the requirements for a clean, interactive UI.
 
-## Features
+## Technologies Used
+- **HTML5**: Page structure.
+- **React**: Component-based architecture for dynamic UI.
+- **Tailwind CSS**: Responsive and utility-first styling.
+- **JavaScript**: Search functionality and dynamic event rendering.
+- **Lucide-React**: Icons for event cards and search bar.
+- **Vite**: Build tool and development server for fast development.
 
-- 🔍 **Real-time Search**: Filter events by name, description, category, or location
-- 📱 **Responsive Design**: Mobile-first approach with tablet and desktop optimizations
-- 🎨 **Modern UI**: Clean design with Tailwind CSS
-- ⚡ **Fast Performance**: Optimized React components with context API
-- 🏛️ **Local Focus**: Islamabad-specific events and locations
+## Prerequisites
+To run this project locally, ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (v16 or higher, LTS recommended)
+- [npm](https://www.npmjs.com/) (included with Node.js)
 
-## Tech Stack
+## How to Run
+Follow these steps to set up and run the project locally:
 
-- **Frontend**: React 18, JavaScript (ES6+)
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **State Management**: React Context API
-- **Build Tool**: Create React App
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-username/isb_events.git
+   cd isb_events
+   ```
 
-## Getting Started
+2. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-### Prerequisites
+3. **Start the Development Server**:
+   ```bash
+   npm run dev
+   ```
 
-- Node.js (version 14 or higher)
-- npm or yarn
+4. **Access the Website**:
+   - Open your browser and navigate to `http://localhost:5173` (or the port Vite assigns).
 
-### Installation
-
-1. Clone the repository:
-\`\`\`bash
-git clone <repository-url>
-cd islamabad-events
-\`\`\`
-
-2. Install dependencies:
-\`\`\`bash
-npm install
-\`\`\`
-
-3. Start the development server:
-\`\`\`bash
-npm start
-\`\`\`
-
-4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-## Project Structure
-
-\`\`\`
-src/
-├── components/
-│   ├── ui/
-│   │   ├── Button.js
-│   │   └── Input.js
-│   ├── EventCard.js
-│   ├── FeaturedEvents.js
-│   ├── Footer.js
-│   ├── HeroSection.js
-│   └── Navbar.js
-├── context/
-│   └── EventsContext.js
-├── data/
-│   └── eventsData.js
-├── App.js
-├── index.js
-└── index.css
-\`\`\`
-
-## Available Scripts
-
-- `npm start` - Runs the app in development mode
-- `npm build` - Builds the app for production
-- `npm test` - Launches the test runner
-- `npm eject` - Ejects from Create React App (one-way operation)
-
-## Customization
-
-### Adding New Events
-
-Edit `src/data/eventsData.js` to add new events:
-
-\`\`\`javascript
-{
-  id: 9,
-  title: "Your Event Title",
-  description: "Event description",
-  date: "2024-02-10",
-  time: "7:00 PM - 9:00 PM",
-  location: "Event Location, Islamabad",
-  category: "Category Name",
-  attendees: 100,
-  image: "image-url",
-  price: "PKR 500",
-}
-\`\`\`
-
-### Styling
-
-The project uses Tailwind CSS. Customize colors and styling in:
-- `tailwind.config.js` - Tailwind configuration
-- `src/index.css` - Global styles
-
-## Deployment
-
-### Build for Production
-
-\`\`\`bash
-npm run build
-\`\`\`
-
-This creates a `build` folder with optimized production files.
-
-### Deploy to Vercel
-
-1. Install Vercel CLI: `npm i -g vercel`
-2. Run: `vercel`
-3. Follow the prompts
-
-### Deploy to Netlify
-
-1. Build the project: `npm run build`
-2. Drag and drop the `build` folder to Netlify
+## Extra Features
+- **Search Bar**: Filters events by name in real-time (case-insensitive, with a "No events found" message for empty results).
+- **Dynamic Event Data**: Events are rendered from a JavaScript array, simulating JSON data fetching.
+- **Responsive Design**: 
+  - Mobile (<576px): Single-column event cards, collapsed navbar.
+  - Tablet (576–992px): Two-column event cards.
+  - Desktop (>992px): Three-column event cards.
+- **Hover Effects**: Event cards scale up slightly on hover for enhanced interactivity.
+- **Islamabad-Specific Content**: Events feature local venues (e.g., F-9 Park, NIC Islamabad, Centaurus Mall) for relevance.
 
 ## Contributing
 
