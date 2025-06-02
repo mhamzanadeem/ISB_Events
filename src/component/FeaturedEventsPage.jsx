@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { Search, Calendar, MapPin, Clock, Users, Star } from "lucide-react"
+import { fetchCryptoEvents } from "../api/fetchCryptoEvents"
 
 // Mock event data for Islamabad
 const eventsData = [
@@ -112,6 +113,37 @@ const eventsData = [
 export default function FeaturedEventsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [cryptoEvents, setCryptoEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadCryptoEvents() {
+      try {
+        const data = await fetchCryptoEvents()
+        // Flatten the nested eventlist from API response
+        const flattenedEvents = data.data?.list?.flatMap((item) =>
+          item.eventlist.map((event) => ({
+            title: event.nativename,
+            description: event.description,
+            date: new Date(event.eventtime * 1000).toLocaleDateString(), // Convert UNIX timestamp to readable date
+            location: event.tagnamelist.includes("Listing") ? "Online (Crypto Exchange)" : "Online", // Assume listings are online
+            coin: event.coinname,
+            symbol: event.coinsymbol,
+            logo: event.coinlogo,
+            price_usd: event.price_usd,
+            confidence: event.confidence
+          }))
+        )
+        setCryptoEvents(flattenedEvents || [])
+      } catch (error) {
+        console.error("Error processing crypto events:", error)
+        setCryptoEvents([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadCryptoEvents()
+  }, [])
 
   // Filter events based on search term and category
   const filteredEvents = useMemo(() => {
@@ -134,7 +166,7 @@ export default function FeaturedEventsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">ISB Events</h1>
+              <h1 className="text-2xl font-bold text-blue-600">Crypto Events</h1>
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
@@ -213,81 +245,72 @@ export default function FeaturedEventsPage() {
         </div>
       </section>
 
-      {/* Featured Events Section */}
+      {/* Featured Crypto Events Section */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Events</h3>
+            <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Crypto Events</h3>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover the most popular and exciting events happening in Islamabad
+              Curated cryptocurrency events from around the world
             </p>
           </div>
 
-          {/* Events Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredEvents.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
-              >
-                <img src={event.image || "/placeholder.svg"} alt={event.title} className="w-full h-48 object-cover" />
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                      {event.category}
-                    </span>
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-600 ml-1">{event.rating}</span>
+          {loading ? (
+            <p className="text-center text-gray-500">Loading events...</p>
+          ) : cryptoEvents.length === 0 ? (
+            <p className="text-center text-gray-500">No crypto events found.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {cryptoEvents.map((event, idx) => (
+                <div key={idx} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                  <div className="p-6">
+                    {event.logo && (
+                      <img
+                        src={event.logo}
+                        alt={`${event.coin} logo`}
+                        className="w-12 h-12 mb-4"
+                      />
+                    )}
+                    <h4 className="text-xl font-bold text-gray-900 mb-2">{event.title || "No Title"}</h4>
+                    <p className="text-gray-600 mb-4 line-clamp-3">{event.description || "No Description"}</p>
+                    <div className="space-y-2 mb-4 text-sm text-gray-500">
+                      {event.date && (
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          {event.date}
+                        </div>
+                      )}
+                      {event.location && (
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          {event.location}
+                        </div>
+                      )}
+                      {event.coin && (
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 mr-2" />
+                          {event.coin} ({event.symbol})
+                        </div>
+                      )}
+                      {event.price_usd !== undefined && (
+                        <div className="flex items-center">
+                          <Users className="h-4 w-4 mr-2" />
+                          Price: ${event.price_usd.toFixed(4)} USD
+                        </div>
+                      )}
+                      {event.confidence !== undefined && (
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 mr-2" />
+                          Confidence: {event.confidence}%
+                        </div>
+                      )}
                     </div>
-                  </div>
-
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h4>
-                  <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      {new Date(event.date).toLocaleDateString("en-US", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Clock className="h-4 w-4 mr-2" />
-                      {event.time}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {event.location}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Users className="h-4 w-4 mr-2" />
-                      {event.attendees} attending
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-blue-600">{event.price}</span>
                     <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                      View Details
+                      Learn More
                     </button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* No Results Message */}
-          {filteredEvents.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-gray-400 mb-4">
-                <Search className="h-16 w-16 mx-auto" />
-              </div>
-              <h4 className="text-xl font-semibold text-gray-900 mb-2">No events found</h4>
-              <p className="text-gray-600">Try adjusting your search terms or category filter</p>
+              ))}
             </div>
           )}
         </div>
