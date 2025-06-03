@@ -1,6 +1,6 @@
 # Featured Events Page
 
-A responsive single-page website for the Dynamics 360 Web Development Internship case study, showcasing local events in Islamabad, Pakistan. The page features a navigation bar, a hero section, and a "Featured Events" section with 3 event cards, including a search bar to filter events by name and dynamic event data rendering. Built with modern web technologies, the site is mobile- and tablet-friendly, meeting the requirements for a clean, interactive UI.
+A responsive single-page website showcasing crypto events worldwide. The page features a navigation bar, a hero section, and a "Featured Events" section with 3 event cards, including a search bar to filter events by name and dynamic event data rendering. Built with modern web technologies, the site is mobile- and tablet-friendly, meeting the requirements for a clean, interactive UI.
 
 ## Technologies Used
 - **HTML5**: Page structure.
