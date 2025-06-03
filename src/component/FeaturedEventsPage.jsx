@@ -2,117 +2,60 @@ import { useEffect, useState, useMemo } from "react"
 import { Search, Calendar, MapPin, Clock, Users, Star } from "lucide-react"
 import { fetchCryptoEvents } from "../api/fetchCryptoEvents"
 
-// Mock event data for Islamabad
+// Mock crypto event data for fallback
 const eventsData = [
   {
     id: 1,
-    title: "Tech Meetup Islamabad",
-    description: "Join fellow developers and tech enthusiasts for networking and knowledge sharing.",
-    date: "2024-06-15",
-    time: "6:00 PM",
-    location: "F-7 Markaz, Islamabad",
-    category: "Technology",
-    price: "Free",
-    attendees: 45,
-    rating: 4.8,
-    image: "/placeholder.svg?height=200&width=300",
+    nativename: "New Listing on Binance",
+    description: "Binance announces the listing of CryptoCoin (CCN) for trading.",
+    eventtime: 1759315200, // Mock timestamp: 2025-09-15 12:00 PM UTC
+    tagnamelist: ["Listing"],
+    coinname: "CryptoCoin",
+    coinsymbol: "CCN",
+    coinlogo: "https://example.com/coinlogo/ccn.png",
+    price_usd: 1.25,
+    confidence: 92,
   },
   {
     id: 2,
-    title: "Lok Virsa Folk Festival",
-    description: "Experience traditional Pakistani culture with folk music, dance, and crafts.",
-    date: "2024-06-20",
-    time: "4:00 PM",
-    location: "Lok Virsa Museum, Shakarparian",
-    category: "Culture",
-    price: "PKR 500",
-    attendees: 200,
-    rating: 4.9,
-    image: "/placeholder.svg?height=200&width=300",
+    nativename: "Airdrop Event for TokenX",
+    description: "Participate in the TokenX airdrop to receive free tokens by staking.",
+    eventtime: 1759401600, // Mock timestamp: 2025-09-16 12:00 PM UTC
+    tagnamelist: ["Airdrop"],
+    coinname: "TokenX",
+    coinsymbol: "TKX",
+    coinlogo: "https://example.com/coinlogo/tkx.png",
+    price_usd: 0.85,
+    confidence: 88,
   },
   {
     id: 3,
-    title: "Islamabad Food Festival",
-    description: "Taste the best local and international cuisines from top restaurants.",
-    date: "2024-06-25",
-    time: "12:00 PM",
-    location: "F-9 Park, Islamabad",
-    category: "Food",
-    price: "PKR 300",
-    attendees: 500,
-    rating: 4.7,
-    image: "/placeholder.svg?height=200&width=300",
+    nativename: "Blockchain Summit 2025",
+    description: "Join industry leaders to discuss the future of blockchain technology.",
+    eventtime: 1759488000, // Mock timestamp: 2025-09-17 12:00 PM UTC
+    tagnamelist: ["Conference"],
+    coinname: "BlockChain",
+    coinsymbol: "BLC",
+    coinlogo: "https://example.com/coinlogo/blc.png",
+    price_usd: 3.10,
+    confidence: 95,
   },
   {
     id: 4,
-    title: "Art Exhibition: Modern Pakistan",
-    description: "Contemporary art showcase featuring emerging Pakistani artists.",
-    date: "2024-06-18",
-    time: "10:00 AM",
-    location: "Pakistan National Council of Arts",
-    category: "Art",
-    price: "PKR 200",
-    attendees: 80,
-    rating: 4.6,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 5,
-    title: "Startup Pitch Competition",
-    description: "Watch innovative startups pitch their ideas to investors and mentors.",
-    date: "2024-06-22",
-    time: "2:00 PM",
-    location: "National Incubation Center, Islamabad",
-    category: "Business",
-    price: "Free",
-    attendees: 120,
-    rating: 4.5,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 6,
-    title: "Margalla Hills Nature Walk",
-    description: "Guided nature walk exploring the beautiful Margalla Hills trails.",
-    date: "2024-06-16",
-    time: "7:00 AM",
-    location: "Trail 3, Margalla Hills",
-    category: "Outdoor",
-    price: "PKR 150",
-    attendees: 30,
-    rating: 4.8,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 7,
-    title: "Qawwali Night at Saidpur",
-    description: "Traditional Qawwali performance in the historic Saidpur Village.",
-    date: "2024-06-28",
-    time: "8:00 PM",
-    location: "Saidpur Village, Islamabad",
-    category: "Music",
-    price: "PKR 800",
-    attendees: 150,
-    rating: 4.9,
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 8,
-    title: "Digital Marketing Workshop",
-    description: "Learn the latest digital marketing strategies and tools from industry experts.",
-    date: "2024-06-30",
-    time: "9:00 AM",
-    location: "Comstech Auditorium, Islamabad",
-    category: "Education",
-    price: "PKR 1500",
-    attendees: 75,
-    rating: 4.7,
-    image: "/placeholder.svg?height=200&width=300",
+    nativename: "New Listing on KuCoin",
+    description: "KuCoin lists MoonCoin (MOON) with trading starting soon.",
+    eventtime: 1759574400, // Mock timestamp: 2025-09-18 12:00 PM UTC
+    tagnamelist: ["Listing"],
+    coinname: "MoonCoin",
+    coinsymbol: "MOON",
+    coinlogo: "https://example.com/coinlogo/moon.png",
+    price_usd: 0.45,
+    confidence: 90,
   },
 ]
 
 export default function FeaturedEventsPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("All")
   const [cryptoEvents, setCryptoEvents] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -121,11 +64,12 @@ export default function FeaturedEventsPage() {
       try {
         const data = await fetchCryptoEvents()
         // Flatten the nested eventlist from API response
-        const flattenedEvents = data.data?.list?.flatMap((item) =>
+        const flattenedEvents = data.flatMap((item) =>
           item.eventlist.map((event) => ({
             title: event.nativename,
             description: event.description,
             date: new Date(event.eventtime * 1000).toLocaleDateString(), // Convert UNIX timestamp to readable date
+            time: new Date(event.eventtime * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Add time
             location: event.tagnamelist.includes("Listing") ? "Online (Crypto Exchange)" : "Online", // Assume listings are online
             coin: event.coinname,
             symbol: event.coinsymbol,
@@ -145,19 +89,25 @@ export default function FeaturedEventsPage() {
     loadCryptoEvents()
   }, [])
 
-  // Filter events based on search term and category
-  const filteredEvents = useMemo(() => {
-    return eventsData.filter((event) => {
-      const matchesSearch =
-        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesCategory = selectedCategory === "All" || event.category === selectedCategory
-      return matchesSearch && matchesCategory
-    })
-  }, [searchTerm, selectedCategory])
-
-  // Get unique categories
-  const categories = ["All", ...Array.from(new Set(eventsData.map((event) => event.category)))]
+  // Filter crypto events based on search term
+  const filteredCryptoEvents = useMemo(() => {
+    // Use API data if available and not empty, otherwise use fallback eventsData
+    const dataSource = cryptoEvents.length > 0 ? cryptoEvents : eventsData.map((event) => ({
+      title: event.nativename,
+      description: event.description,
+      date: new Date(event.eventtime * 1000).toLocaleDateString(),
+      time: new Date(event.eventtime * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      location: event.tagnamelist.includes("Listing") ? "Online (Crypto Exchange)" : "Online",
+      coin: event.coinname,
+      symbol: event.coinsymbol,
+      logo: event.coinlogo,
+      price_usd: event.price_usd,
+      confidence: event.confidence
+    }))
+    return dataSource.filter((event) =>
+      event.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [searchTerm, cryptoEvents])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -166,7 +116,7 @@ export default function FeaturedEventsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">Crypto Events</h1>
+              <h1 className="text-2xl font-bold text-blue-600">Crypto Events Hub</h1>
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">
@@ -194,9 +144,9 @@ export default function FeaturedEventsPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6">Discover Amazing Events in Islamabad</h2>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">Discover Exciting Crypto Events Worldwide</h2>
           <p className="text-xl md:text-2xl mb-8 text-blue-100">
-            From tech meetups to cultural festivals, find your next adventure in Pakistan's capital
+            Explore the latest cryptocurrency listings, airdrops, and more from global exchanges
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
             <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
@@ -218,28 +168,11 @@ export default function FeaturedEventsPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="text"
-                placeholder="Search events..."
+                placeholder="Search events by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-            </div>
-
-            {/* Category Filter */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === category
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
             </div>
           </div>
         </div>
@@ -257,11 +190,11 @@ export default function FeaturedEventsPage() {
 
           {loading ? (
             <p className="text-center text-gray-500">Loading events...</p>
-          ) : cryptoEvents.length === 0 ? (
+          ) : filteredCryptoEvents.length === 0 ? (
             <p className="text-center text-gray-500">No crypto events found.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {cryptoEvents.map((event, idx) => (
+              {filteredCryptoEvents.map((event, idx) => (
                 <div key={idx} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                   <div className="p-6">
                     {event.logo && (
@@ -274,10 +207,10 @@ export default function FeaturedEventsPage() {
                     <h4 className="text-xl font-bold text-gray-900 mb-2">{event.title || "No Title"}</h4>
                     <p className="text-gray-600 mb-4 line-clamp-3">{event.description || "No Description"}</p>
                     <div className="space-y-2 mb-4 text-sm text-gray-500">
-                      {event.date && (
+                      {event.date && event.time && (
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-2" />
-                          {event.date}
+                          {event.date} at {event.time}
                         </div>
                       )}
                       {event.location && (
@@ -305,9 +238,14 @@ export default function FeaturedEventsPage() {
                         </div>
                       )}
                     </div>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                      Learn More
-                    </button>
+                    <div className="flex space-x-4">
+                      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Learn More
+                      </button>
+                      <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        Register
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -321,8 +259,8 @@ export default function FeaturedEventsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h5 className="text-xl font-bold mb-4">ISB Events</h5>
-              <p className="text-gray-400">Connecting people through amazing events in Islamabad, Pakistan.</p>
+              <h5 className="text-xl font-bold mb-4">Crypto Events Hub</h5>
+              <p className="text-gray-400">Connecting you to the latest cryptocurrency events and opportunities worldwide.</p>
             </div>
             <div>
               <h6 className="font-semibold mb-4">Quick Links</h6>
@@ -354,22 +292,22 @@ export default function FeaturedEventsPage() {
               <ul className="space-y-2 text-gray-400">
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Technology
+                    Listings
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Culture
+                    Airdrops
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Food
+                    Blockchain
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
-                    Business
+                    Trading
                   </a>
                 </li>
               </ul>
@@ -377,14 +315,14 @@ export default function FeaturedEventsPage() {
             <div>
               <h6 className="font-semibold mb-4">Contact Info</h6>
               <div className="space-y-2 text-gray-400">
-                <p>📧 hello@isbevents.com</p>
-                <p>📞 +92 51 123 4567</p>
-                <p>📍 F-7 Markaz, Islamabad</p>
+                <p>📧 support@cryptoeventshub.com</p>
+                <p>📞 +1 800 123 4567</p>
+                <p>📍 Global (Online Platform)</p>
               </div>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 ISB Events. All rights reserved.</p>
+            <p>© 2025 Crypto Events Hub. All rights reserved.</p>
           </div>
         </div>
       </footer>

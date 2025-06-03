@@ -13,28 +13,7 @@ const options = {
   }
 };
 
-const mockData = [
-  {
-    title: "Mock Crypto Event",
-    description: "This is mock event data used when API fails.",
-    date: "2024-07-01",
-    location: "Online"
-  }
-];
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-
 export async function fetchCryptoEvents() {
-  // Check sessionStorage first
-//   const cached = sessionStorage.getItem("cryptoEvents");
-//   if (cached) {
-//     console.log("Returning cached data:", JSON.parse(cached));
-//     return JSON.parse(cached);
-//   }
-
   try {
 	const response = await axios.request(options);
 	//console.log(response.data);
