@@ -91,7 +91,7 @@ export default function FeaturedEventsPage() {
 
   // Filter crypto events based on search term
   const filteredCryptoEvents = useMemo(() => {
-    // Use API data if available and not empty, otherwise use fallback eventsData
+    // Use API data if available, otherwise use eventsData
     const dataSource = cryptoEvents.length > 0 ? cryptoEvents : eventsData.map((event) => ({
       title: event.nativename,
       description: event.description,
@@ -189,9 +189,9 @@ export default function FeaturedEventsPage() {
           </div>
 
           {loading ? (
-            <p className="text-center text-gray-500">Loading events...</p>
+            <p className="text-center text-gray-500 text-lg">Loading Crypto Events...</p>
           ) : filteredCryptoEvents.length === 0 ? (
-            <p className="text-center text-gray-500">No crypto events found.</p>
+            <p className="text-center text-gray-500 text-lg">No crypto events found.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredCryptoEvents.map((event, idx) => (
